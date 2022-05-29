@@ -37,6 +37,7 @@ import dev.plex.world.CustomWorld;
 import java.io.File;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.conversions.Bson;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 
@@ -120,7 +121,7 @@ public class Plex extends PlexPlugin implements PlexApiProvider
         messages.load();
         toggles.load();
 
-        // Don't add default entries to indefinite ban file
+        // Don't add default entries to these files
         indefBans.load(false);
         commands.load(false);
 

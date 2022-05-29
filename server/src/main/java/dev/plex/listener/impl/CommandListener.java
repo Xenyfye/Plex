@@ -24,7 +24,7 @@ public class CommandListener extends PlexListener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-        Bukkit.getOnlinePlayers().stream().filter(pl -> plugin.getPlayerCache().getPlexPlayer(pl.getUniqueId()).isCommandSpy() && plugin.getPlayerCache().getPlexPlayer(pl.getUniqueId()).isAdminActive()).forEach(pl ->
+        Bukkit.getOnlinePlayers().stream().filter(pl -> plugin.getPlayerCache().getPlexPlayer(pl.getUniqueId()).isCommandSpy() && hasCommandSpy(plugin.getPlayerCache().getPlexPlayer(pl.getUniqueId()))).forEach(pl ->
         {
             Player player = event.getPlayer();
             String command = event.getMessage();
@@ -75,9 +75,8 @@ public class CommandListener extends PlexListener
                 String[] commandArgs = blockedCommand.getCommand().split(" ");
                 if (arguments.toLowerCase(Locale.ROOT).startsWith(StringUtils.join(commandArgs, " ", 1, commandArgs.length).toLowerCase(Locale.ROOT)))
                 {
-                    PlexLog.debug("Player attempted to use a blocked command with an alias.");
+                    PlexLog.debug("Player attempted to use a blocked command with alias of normal command: " + blockedCommand.getCommand());
                     cmdRef.set(blockedCommand);
-                    return;
                 }
             }
         });
@@ -127,6 +126,18 @@ public class CommandListener extends PlexListener
                 }
             }
         }
+    }
 
+    private boolean hasCommandSpy(PlexPlayer plexPlayer)
+    {
+        if (plugin.getSystem().equalsIgnoreCase("ranks"))
+        {
+            return plexPlayer.isAdminActive();
+        }
+        else if (plugin.getSystem().equalsIgnoreCase("permissions"))
+        {
+            return plexPlayer.getPlayer().hasPermission("plex.commandspy");
+        }
+        return false;
     }
 }
