@@ -22,7 +22,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 @Getter
 public class ModuleManager
 {
-
     private final List<PlexModule> modules = Lists.newArrayList();
     private final LibraryLoader libraryLoader;
 

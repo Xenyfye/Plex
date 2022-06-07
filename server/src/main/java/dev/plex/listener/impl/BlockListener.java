@@ -38,9 +38,8 @@ public class BlockListener extends PlexListener
                 {
                     blockedBlocks.add(Material.valueOf(block.toUpperCase()));
                 }
-                catch (IllegalArgumentException e)
+                catch (IllegalArgumentException ignored)
                 {
-                    //
                 }
             }
         }

@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import dev.plex.Plex;
 import dev.plex.command.PlexCommand;
 import dev.plex.listener.PlexListener;
+import dev.plex.util.PlexLog;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import lombok.AccessLevel;
@@ -46,22 +48,42 @@ public abstract class PlexModule
     {
     }
 
+    /**
+     * Registers a PlexListener within a module
+     *
+     * @param listener The PlexListener to be registered
+     */
     public void registerListener(PlexListener listener)
     {
         listeners.add(listener);
     }
 
+    /**
+     * Unregisters a PlexListener. Handled by Plex automatically
+     *
+     * @param listener The PlexListener to be registered
+     */
     public void unregisterListener(PlexListener listener)
     {
         listeners.remove(listener);
         HandlerList.unregisterAll(listener);
     }
 
+    /**
+     * Registers a PlexCommand within a module
+     *
+     * @param command The PlexCommand to be registered
+     */
     public void registerCommand(PlexCommand command)
     {
         commands.add(command);
     }
 
+    /**
+     * Unregisters a PlexCommand. Handled by Plex automatically
+     *
+     * @param command The PlexCommand to be registered
+     */
     public void unregisterCommand(PlexCommand command)
     {
         commands.remove(command);
@@ -70,6 +92,41 @@ public abstract class PlexModule
     public PlexCommand getCommand(String name)
     {
         return commands.stream().filter(plexCommand -> plexCommand.getName().equalsIgnoreCase(name) || plexCommand.getAliases().stream().map(String::toLowerCase).toList().contains(name.toLowerCase(Locale.ROOT))).findFirst().orElse(null);
+    }
+
+    /**
+     * Adds a message to the messages.yml file
+     *
+     * @param message   The key value for the message
+     * @param initValue The message itself
+     */
+    public void addDefaultMessage(String message, Object initValue)
+    {
+        if (plex.messages.getString(message) == null)
+        {
+            plex.messages.set(message, initValue);
+            plex.messages.save();
+            PlexLog.debug("'{0}' message added from " + plexModuleFile.getName(), message);
+        }
+    }
+
+    /**
+     * Adds a message to the messages.yml with a comment
+     *
+     * @param message   The key value for the message
+     * @param initValue The message itself
+     * @param comments  The comments to be placed above the message
+     */
+    public void addDefaultMessage(String message, Object initValue, String... comments)
+    {
+        if (plex.messages.getString(message) == null)
+        {
+            plex.messages.set(message, initValue);
+            plex.messages.save();
+            plex.messages.setComments(message, Arrays.asList(comments));
+            plex.messages.save();
+            PlexLog.debug("'{0}' message added from " + plexModuleFile.getName(), message);
+        }
     }
 
     @Nullable
